@@ -2,56 +2,64 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import pandas as pd
+import matplotlib.pyplot as plt
 
-base_url = 'https://understat.com/match/'
-match = str(input("Match ID: "))
-url = base_url + match
 
-response = requests.get(url)
-soup = BeautifulSoup(response.content, 'lxml')
-scripts = soup.find_all('script')
+def get_data():
+	base_url = 'https://understat.com/match/'
+	match = str(input("Match ID: "))
+	url = base_url + match
 
-strings = scripts[1].string
+	response = requests.get(url)
+	soup = BeautifulSoup(response.content, 'lxml')
+	scripts = soup.find_all('script')
 
-ind_start = strings.index("('") + 2
-ind_end = strings.index("')")
+	strings = scripts[1].string
 
-json_data = strings[ind_start:ind_end]
-json_data = json_data.encode('utf8').decode('unicode_escape')
-data = json.loads(json_data)
+	ind_start = strings.index("('") + 2
+	ind_end = strings.index("')")
 
-x = []
-y = []
-xg = []
-team = []
+	json_data = strings[ind_start:ind_end]
+	json_data = json_data.encode('utf8').decode('unicode_escape')
+	return json.loads(json_data)
 
-data_home = data['h']
-data_away = data['a']
 
-for i in range(len(data_home)):
-  for key in data_home[i]:
-    if key == 'X':
-      x.append(data_home[i][key])
-    if key == 'Y':
-      y.append(data_home[i][key])
-    if key == 'xG':
-      xg.append(data_home[i][key])
-    if key == 'h_team':
-      team.append(data_home[i][key])
+def get_xg(data):
 
-for i in range(len(data_away)):
-  for key in data_away[i]:
-    if key == 'X':
-      x.append(data_away[i][key])
-    if key == 'Y':
-      y.append(data_away[i][key])
-    if key == 'xG':
-      xg.append(data_away[i][key])
-    if key == 'a_team':
-      team.append(data_away[i][key])
+	x, y, xg, team, minute = [], [], [], [], []
 
-col_names = ['x', 'y', 'xg', 'team']
-df = pd.DataFrame([x, y, xg, team], index=col_names)
+	data_home = data['h']
+	data_away = data['a']
 
-df = df.T
-print(df)
+	for shot_event in data_home:
+		x.append(shot_event['X'])
+		y.append(shot_event['Y'])
+		xg.append(shot_event['xG'])
+		team.append(shot_event['h_team'])
+		minute.append(shot_event['minute'])
+
+	for shot_event in data_away:
+		x.append(shot_event['X'])
+		y.append(shot_event['Y'])
+		xg.append(shot_event['xG'])
+		team.append(shot_event['a_team'])
+		minute.append(shot_event['minute'])
+
+	col_names = ['x', 'y', 'xg', 'team', 'minute']
+	df = pd.DataFrame([x, y, xg, team, minute], index=col_names)
+
+	return df.T
+
+
+def get_flow_chart(xg_df):
+	pass
+
+
+def main():
+	data = get_data()
+	xg_df = get_xg(data)
+	print(xg_df)
+	get_flow_chart(xg_df)
+
+
+main()
