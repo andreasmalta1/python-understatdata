@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 
