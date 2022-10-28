@@ -53,13 +53,12 @@ def get_xg(data):
 
 
 def get_flow_chart(xg_df):
-	pass
+	a_xg, h_xg, a_min, h_min = [0], [0], [0], [0]
 
 
 def main():
 	data = get_data()
 	xg_df = get_xg(data)
-	print(xg_df)
 	get_flow_chart(xg_df)
 
 
