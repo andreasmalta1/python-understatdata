@@ -2,8 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 
 def get_data():
@@ -52,14 +50,10 @@ def get_xg(data):
 	return df.T
 
 
-def get_flow_chart(xg_df):
-	a_xg, h_xg, a_min, h_min = [0], [0], [0], [0]
-
-
 def main():
 	data = get_data()
 	xg_df = get_xg(data)
-	get_flow_chart(xg_df)
+	print(xg_df)
 
 
 main()
